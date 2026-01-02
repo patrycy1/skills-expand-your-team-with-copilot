@@ -510,7 +510,8 @@ document.addEventListener("DOMContentLoaded", () => {
       await navigator.clipboard.writeText(url);
       showMessage('Link copied to clipboard!', 'success');
     } catch (error) {
-      // Fallback for older browsers
+      // Fallback for older browsers that don't support Clipboard API
+      // Note: document.execCommand is deprecated but necessary for legacy browser support
       const textArea = document.createElement('textarea');
       textArea.value = url;
       textArea.style.position = 'fixed';
@@ -577,17 +578,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Create social sharing buttons
     const shareButtons = `
       <div class="share-buttons">
-        <button class="share-button share-facebook" data-activity="${name}" title="Share on Facebook">
-          <span class="share-icon">📘</span>
+        <button class="share-button share-facebook" data-activity="${name}" title="Share on Facebook" aria-label="Share on Facebook">
+          <span class="share-icon" aria-hidden="true">📘</span>
         </button>
-        <button class="share-button share-twitter" data-activity="${name}" title="Share on Twitter">
-          <span class="share-icon">🐦</span>
+        <button class="share-button share-twitter" data-activity="${name}" title="Share on Twitter" aria-label="Share on Twitter">
+          <span class="share-icon" aria-hidden="true">🐦</span>
         </button>
-        <button class="share-button share-email" data-activity="${name}" title="Share via Email">
-          <span class="share-icon">✉️</span>
+        <button class="share-button share-email" data-activity="${name}" title="Share via Email" aria-label="Share via Email">
+          <span class="share-icon" aria-hidden="true">✉️</span>
         </button>
-        <button class="share-button share-copy" data-activity="${name}" title="Copy Link">
-          <span class="share-icon">🔗</span>
+        <button class="share-button share-copy" data-activity="${name}" title="Copy Link" aria-label="Copy Link">
+          <span class="share-icon" aria-hidden="true">🔗</span>
         </button>
       </div>
     `;
