@@ -472,6 +472,63 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Social sharing functions
+  function getActivityShareText(name, details) {
+    const formattedSchedule = formatSchedule(details);
+    return `Check out this activity at Mergington High School: ${name}\n\n${details.description}\n\nSchedule: ${formattedSchedule}`;
+  }
+
+  function getActivityShareUrl() {
+    return window.location.href.split('?')[0];
+  }
+
+  function shareOnFacebook(name, details) {
+    const url = getActivityShareUrl();
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  }
+
+  function shareOnTwitter(name, details) {
+    const text = getActivityShareText(name, details);
+    const url = getActivityShareUrl();
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  }
+
+  function shareViaEmail(name, details) {
+    const text = getActivityShareText(name, details);
+    const url = getActivityShareUrl();
+    const subject = `Check out ${name} at Mergington High School`;
+    const body = `${text}\n\nLearn more: ${url}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  }
+
+  async function copyShareLink(name, details) {
+    const url = getActivityShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      showMessage('Link copied to clipboard!', 'success');
+    } catch (error) {
+      // Fallback for older browsers that don't support Clipboard API
+      // Note: document.execCommand is deprecated but necessary for legacy browser support
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showMessage('Link copied to clipboard!', 'success');
+      } catch (err) {
+        showMessage('Failed to copy link. Please copy manually.', 'error');
+      }
+      document.body.removeChild(textArea);
+    }
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -519,6 +576,24 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Create social sharing buttons
+    const shareButtons = `
+      <div class="share-buttons">
+        <button class="share-button share-facebook" data-activity="${name}" title="Share on Facebook" aria-label="Share on Facebook">
+          <span class="share-icon" aria-hidden="true">📘</span>
+        </button>
+        <button class="share-button share-twitter" data-activity="${name}" title="Share on Twitter" aria-label="Share on Twitter">
+          <span class="share-icon" aria-hidden="true">🐦</span>
+        </button>
+        <button class="share-button share-email" data-activity="${name}" title="Share via Email" aria-label="Share via Email">
+          <span class="share-icon" aria-hidden="true">✉️</span>
+        </button>
+        <button class="share-button share-copy" data-activity="${name}" title="Copy Link" aria-label="Copy Link">
+          <span class="share-icon" aria-hidden="true">🔗</span>
+        </button>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -528,6 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      ${shareButtons}
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -586,6 +662,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    const facebookBtn = activityCard.querySelector(".share-facebook");
+    const twitterBtn = activityCard.querySelector(".share-twitter");
+    const emailBtn = activityCard.querySelector(".share-email");
+    const copyBtn = activityCard.querySelector(".share-copy");
+
+    facebookBtn.addEventListener("click", () => shareOnFacebook(name, details));
+    twitterBtn.addEventListener("click", () => shareOnTwitter(name, details));
+    emailBtn.addEventListener("click", () => shareViaEmail(name, details));
+    copyBtn.addEventListener("click", () => copyShareLink(name, details));
 
     activitiesList.appendChild(activityCard);
   }
