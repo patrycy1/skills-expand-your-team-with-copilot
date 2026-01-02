@@ -57,10 +57,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dark mode functionality
   function initializeDarkMode() {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      document.body.classList.add("dark-mode");
-      themeIcon.textContent = "☀️";
+    try {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark-mode");
+        themeIcon.textContent = "☀️";
+      }
+    } catch (error) {
+      console.error("Failed to load theme preference:", error);
     }
   }
 
@@ -72,7 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
     themeIcon.textContent = isDarkMode ? "☀️" : "🌙";
     
     // Save preference
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    try {
+      localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    } catch (error) {
+      console.error("Failed to save theme preference:", error);
+    }
   }
 
   // Event listener for dark mode toggle
