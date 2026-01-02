@@ -515,6 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const textArea = document.createElement('textarea');
       textArea.value = url;
       textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
       textArea.style.left = '-999999px';
       document.body.appendChild(textArea);
       textArea.select();
