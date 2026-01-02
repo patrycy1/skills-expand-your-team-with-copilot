@@ -62,9 +62,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (savedTheme === "dark") {
         document.body.classList.add("dark-mode");
         themeIcon.textContent = "☀️";
+      } else {
+        // Ensure light mode icon is set (default or explicitly saved)
+        themeIcon.textContent = "🌙";
       }
     } catch (error) {
       console.error("Failed to load theme preference:", error);
+      // Default to light mode icon on error
+      themeIcon.textContent = "🌙";
     }
   }
 
